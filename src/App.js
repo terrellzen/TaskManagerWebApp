@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 //Import Components to Use
 import MainMenu from './components/MainMenu';
 import TaskCreation from './components/TaskCreation';
+import TaskSearch from './components/TaskSearch';
 import TaskView from './components/TaskView';
 import TaskUpdate from './components/TaskUpdate';
 import TaskRemoval from './components/TaskRemoval';
@@ -36,13 +37,16 @@ function App() {
                 <Link class="nav-link" to="/createtask">Create a Task</Link>
               </li>
               <li class="nav-item active">
-                <Link class="nav-link" to="/viewtask">View Tasks</Link>
+                <Link class="nav-link" to="/searchtask">Search Tasks</Link>
               </li>
               <li class="nav-item active">
                 <Link class="nav-link" to="/updatetask">Update Tasks</Link>
               </li>
               <li class="nav-item active">
                 <Link class="nav-link" to="/deletetask">Delete Task</Link>
+              </li>
+              <li class="nav-item active">
+                <Link class="nav-link" to="/viewtask">View Task</Link>
               </li>
             </ul>
           </div>
@@ -52,9 +56,10 @@ function App() {
         <Routes>
           <Route path="/" element={<MainMenu />} />
           <Route path="/createtask" element={<TaskCreation />} />
-          <Route path="/viewtask" element={<TaskView />} />
+          <Route path="/searchtask" element={<TaskSearch />} />
           <Route path="/updatetask" element={<TaskUpdate />} />
           <Route path="/deletetask" element={<TaskRemoval />} />
+          <Route path="/viewtask" element={<TaskView />} />
         </Routes>
       </div>
     </BrowserRouter>
