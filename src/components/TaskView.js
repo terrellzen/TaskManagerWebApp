@@ -1,60 +1,63 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
 const TaskComponent = () => {
-  const [task, setTask] = useState(null); // State to hold the task data
-  const [taskId, setTaskId] = useState(0); // State to hold the task ID input value
+    const [projectId, setProjectId] = useState('');
+    const [tasks, setTasks] = useState([]);
+    const [error, setError] = useState('');
 
-  // Function to fetch task data from the API
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`https://127.0.0.1:7290/api/Task/GetTask?taskID=${taskId}`);
-      setTask(response.data);
-    } catch (error) {
-      console.error('Error fetching task:', error);
-    }
-  };
+    const handleProjectIdChange = (e) => {
+        setProjectId(e.target.value);
+    };
 
-  useEffect(() => {
-    // Call the fetchData function when the component mounts or when taskId changes
-    fetchData();
-  }, [taskId]); // Fetch data whenever task ID changes
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.get(`https://127.0.0.1:7290/api/Task/GetTasks?projectID=${projectId}`);
+            setTasks(response.data);
+            setError('');
+        } catch (error) {
+            if (error.response.status === 404) {
+                setError('No tasks found for the provided project ID.');
+            } else {
+                setError('An error occurred while fetching tasks.');
+            }
+            setTasks([]);
+        }
+    };
 
-  // Event handler to update the taskId state when the input value changes
-  const handleTaskIdChange = (event) => {
-    setTaskId(event.target.value);
-  };
-
-  // Event handler to initiate the search for the task
-  const handleFindClick = () => {
-    // Call the fetchData function to fetch task data based on the current taskId state
-    fetchData();
-  };
-
-  // Render the component
-  return (
-    <div>
-      {/* Input field for entering the task ID */}
-      <label htmlFor="taskIdInput">Enter Task ID: </label>
-      <input type="number" id="taskIdInput" value={taskId} onChange={handleTaskIdChange} />
-      
-      {/* Button to initiate the search */}
-      <button onClick={handleFindClick}>Find</button>
-      
-      {/* Conditional rendering based on whether task data is available */}
-      {task ? (
+    return (
         <div>
-          <h2>Task Details</h2>
-          <p>Task ID: {task.taskId}</p>
-          <p>Name: {task.taskName}</p>
-          <p>Description: {task.taskDesc}</p>
-          {/* Render other task details as needed */}
+            <h2>Enter Project ID to Retrieve Tasks</h2>
+            <form onSubmit={handleSubmit}>
+                <label>
+                    Project ID:
+                    <input type="text" value={projectId} onChange={handleProjectIdChange} />
+                </label>
+                <button type="submit">Retrieve Tasks</button>
+            </form>
+            {error && <p>{error}</p>}
+            {tasks.length > 0 && (
+                <div>
+                    <h3>Tasks:</h3>
+                    <ul>
+                        {tasks.map(task => (
+                            <li key={task.taskId}>
+                                <strong>Task ID:</strong> {task.taskId}<br />
+                                <strong>Task Name:</strong> {task.taskName}<br />
+                                <strong>Task Description:</strong> {task.taskDesc}<br />
+                                <strong>Status:</strong> {task.status}<br />
+                                <strong>Created:</strong> {new Date(task.created).toLocaleString()}<br />
+                                <strong>Updated:</strong> {new Date(task.updated).toLocaleString()}<br />
+                                <strong>Project ID:</strong> {task.projectId}<br />
+                                <strong>Project Description:</strong> {task.projectDesc}<br />
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
         </div>
-      ) : (
-        <p>No task found with ID {taskId}</p>
-      )}
-    </div>
-  );
+    );
 };
 
 export default TaskComponent;
